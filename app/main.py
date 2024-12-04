@@ -38,23 +38,26 @@ namespaces = fetch_namespaces()
 
 if isinstance(namespaces, list):  # Ensure it's a list
     st.sidebar.title("Codebases")
-     # Establecer un estilo uniforme para todos los botones
+
     
     for ns in namespaces:
         last_item = ns.split('/')[-1]
         
         # Create a button for each namespace
         if st.sidebar.button(f"- {last_item}", help=f"Select {last_item}", use_container_width=True):
-            # Guardar el código seleccionado en el estado de la sesión
+
             st.session_state.selected_codebase = ns
             st.session_state.selected_codebase_name = last_item
 
-    # Entrada para el usuario en la barra lateral: selecciona o ingresa un namespace
-    namespace = st.sidebar.text_input("Enter a new namespace", value="default_namespace")
-
-    # Mostrar el botón para agregar el código base
-    if st.sidebar.button("+ Add codebase", key="add_codebase_button"):
-        # URL de la API
+    
+    namespace = st.sidebar.text_input(
+        "Add a new codebase",
+        help="Provide a public GitHub repository link to enable AI-driven code analysis and questions.",
+    placeholder="e.g., https://github.com/username/repository"
+    )
+    
+    if st.sidebar.button("+ Add codebase", key="add_codebase_button", type="secondary", icon="➕"):
+        # URL
         url = "http://127.0.0.1:8000/create_namespace"
 
         # Payload con el namespace seleccionado
@@ -69,11 +72,12 @@ if isinstance(namespaces, list):  # Ensure it's a list
 
             # Manejar la respuesta de la API
             if response.status_code == 200:
-                st.sidebar.success(f"Namespace '{namespace}' creado exitosamente!")
+                st.sidebar.success(f"Namespace '{namespace}' created successfully!")
+                st.rerun()
             else:
-                st.sidebar.error(f"Error al crear namespace: {response.text}")
+                st.sidebar.error(f"Error creating namespace: {response.text}")
         except requests.exceptions.RequestException as e:
-            st.sidebar.error(f"Error llamando a la API: {e}")
+            st.sidebar.error(f"Error calling the API: {e}")
             
 
 # Check if a codebase has been selected

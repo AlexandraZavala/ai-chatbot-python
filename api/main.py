@@ -141,8 +141,10 @@ def insert_codebase_into_pinecone(file_content, index_name, namespace):
 
 
 def perform_rag(query, namespace):
+    # Convert the user's query into a numerical embedding
     raw_query_embedding = get_huggingface_embeddings(query)
     
+    # Search for the top 5 most relevant matches in the Pinecone index based on the query embedding
     top_matches = pinecone_index.query(vector=raw_query_embedding.tolist(), top_k=5, include_metadata=True, namespace=namespace)
 
     # Get the list of retrieved texts
@@ -155,7 +157,7 @@ def perform_rag(query, namespace):
 
     Answer any questions I have about the codebase, based on the code provided. Always consider all of the context provided when forming a response.
     
-    Let's thik step by step.
+    Let's think step by step.
     """
 
     llm_response = client.chat.completions.create(
